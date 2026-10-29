@@ -1,0 +1,2 @@
+# Core India paper-trading primitives use only the Python standard library.
+# Add a Kite SDK only when implementing and validating the market-data adapter.
