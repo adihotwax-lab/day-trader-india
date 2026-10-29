@@ -7,12 +7,15 @@ from datetime import datetime, timezone
 class PaperLedger:
     def __init__(self, path: str = "data/paper_ledger.sqlite3"):
         self.path = path
+        self._memory_connection = sqlite3.connect(":memory:", timeout=10) if path == ":memory:" else None
         if path != ":memory:":
             Path(path).parent.mkdir(parents=True, exist_ok=True)
         with self._connect() as db:
             db.execute("CREATE TABLE IF NOT EXISTS paper_events (id INTEGER PRIMARY KEY AUTOINCREMENT, event_key TEXT UNIQUE NOT NULL, symbol TEXT NOT NULL, side TEXT NOT NULL, quantity INTEGER NOT NULL CHECK(quantity > 0), price REAL NOT NULL CHECK(price > 0), created_at TEXT NOT NULL)")
 
     def _connect(self):
+        if self._memory_connection is not None:
+            return self._memory_connection
         return sqlite3.connect(self.path, timeout=10)
 
     def record_fill(self, event_key: str, symbol: str, side: str, quantity: int, price: float, created_at: datetime | None = None) -> bool:
