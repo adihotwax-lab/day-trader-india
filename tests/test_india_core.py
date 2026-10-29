@@ -20,6 +20,8 @@ class IndiaCoreTests(unittest.TestCase):
         with self.assertRaises(ValueError): validate_candles([incomplete], now)
         stale = Candle(now - timedelta(minutes=10), 100, 101, 99, 100, 10)
         with self.assertRaises(ValueError): validate_candles([stale], now)
+        future = Candle(now + timedelta(minutes=1), 100, 101, 99, 100, 10)
+        with self.assertRaises(ValueError): validate_candles([future], now)
 
     def test_position_size_and_safe_config(self):
         self.assertEqual(position_size(100_000, 100, 98, 0.5), 250)
