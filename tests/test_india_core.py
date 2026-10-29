@@ -5,6 +5,8 @@ from india.candles import Candle, validate_candles
 from india.strategies import opening_range_breakout
 from paper.risk import RiskConfig, position_size
 from paper.ledger import PaperLedger
+from paper.config import load_risk_config
+from india.instruments import resolve_instrument
 
 class IndiaCoreTests(unittest.TestCase):
     def test_market_session_and_holiday(self):
@@ -33,6 +35,18 @@ class IndiaCoreTests(unittest.TestCase):
         self.assertTrue(ledger.record_fill("sig-1", "reliance", "BUY", 2, 1200))
         self.assertFalse(ledger.record_fill("sig-1", "reliance", "BUY", 2, 1200))
         self.assertEqual(len(ledger.events()), 1)
+
+    def test_config_and_exact_instrument_resolution(self):
+        cfg = load_risk_config({"PAPER_MODE": "true", "LIVE_ORDERS_ENABLED": "false"})
+        self.assertTrue(cfg.paper_mode)
+        rows = [
+            {"exchange": "NSE", "tradingsymbol": "RELIANCE", "instrument_token": 123, "instrument_type": "EQ", "name": "Reliance Industries"},
+            {"exchange": "NSE", "tradingsymbol": "NIFTY 50", "instrument_token": 256, "instrument_type": "INDEX", "name": "Nifty 50"},
+        ]
+        self.assertEqual(resolve_instrument(rows, "NSE", "reliance").instrument_token, 123)
+        self.assertEqual(resolve_instrument(rows, "NSE", "NIFTY 50").instrument_token, 256)
+        with self.assertRaises(LookupError): resolve_instrument(rows, "NSE", "RELIANCE1")
+        with self.assertRaises(ValueError): load_risk_config({"LIVE_ORDERS_ENABLED": "true"})
 
     def test_opening_range_signal_only_after_range(self):
         day = date(2026, 10, 30)
