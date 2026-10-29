@@ -43,6 +43,8 @@ def validate_candles(candles: Iterable[Candle], now: datetime, max_age: timedelt
     if stamps != sorted(stamps):
         raise ValueError("Candles must be in chronological order")
     local_now = now.replace(tzinfo=IST) if now.tzinfo is None else now.astimezone(IST)
+    if stamps[-1] > local_now:
+        raise ValueError("Latest candle timestamp is in the future")
     if local_now - stamps[-1] > max_age:
         raise ValueError("Latest candle is stale")
     return [x[1] for x in normalized]
