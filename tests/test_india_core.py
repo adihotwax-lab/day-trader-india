@@ -37,7 +37,7 @@ class IndiaCoreTests(unittest.TestCase):
     def test_opening_range_signal_only_after_range(self):
         day = date(2026, 10, 30)
         def c(h, o, hi, lo, cl):
-            return Candle(datetime(2026, 10, 30, h, o, tzinfo=IST), 100, hi, lo, cl, 100)
+            return Candle(datetime(2026, 10, 30, h, o, tzinfo=IST), cl, hi, lo, cl, 100)
         bars = [c(9, 15, 101, 99, 100), c(9, 20, 102, 99, 101), c(9, 25, 102, 98, 100), c(9, 30, 103, 100, 102), c(9, 35, 104, 101, 103)]
         signal = opening_range_breakout("reliance", bars)
         self.assertIsNotNone(signal)
