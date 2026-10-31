@@ -26,3 +26,15 @@ Kite access tokens expire daily and must be regenerated through the normal login
 ## Deployment safety
 
 Use HTTPS. Restrict access to the service to your own use at the hosting/network layer where possible. Keep the SQLite database on a private persistent volume with restrictive file permissions. Never enable order APIs or add order-placement endpoints to this service.
+
+## Deploy on Railway
+
+1. Create a Railway project and deploy this GitHub repository, selecting branch `india-nse-paper`.
+2. Add a persistent Railway Volume mounted at `/data`.
+3. Add service variables `TOKEN_DB_PATH=/data/kite_session.sqlite3`, `PAPER_MODE=true`, and `LIVE_ORDERS_ENABLED=false`.
+4. After the first successful deployment, generate a Railway public HTTPS domain.
+5. Set the Kite Developer Console Redirect URL to `https://YOUR-RAILWAY-DOMAIN/kite/callback` (replace with the exact generated domain).
+6. Add `KITE_API_KEY` and `KITE_API_SECRET` as Railway service variables only. Never put them in GitHub files or chat.
+7. Redeploy if needed, then visit `/health` and `/kite/login` on the generated domain.
+
+Do not add `KITE_ACCESS_TOKEN` as a static variable: the backend stores the daily token in the persistent SQLite database after the official login callback.
