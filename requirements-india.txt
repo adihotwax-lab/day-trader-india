@@ -1,2 +1,4 @@
-# Core India paper-trading primitives use only the Python standard library.
-# Add a Kite SDK only when implementing and validating the market-data adapter.
+# India paper-trading core + Kite Connect authentication backend
+kiteconnect>=5.0.0,<6.0.0
+fastapi>=0.110,<1.0
+uvicorn[standard]>=0.27,<1.0
